@@ -76,7 +76,7 @@ functions:
           path: leases/online
           method: get
 
-  getStatusForMac:
+  getLeaseStatusForMac:
     handler: leases.getStatusForMac
     events:
       - http:
@@ -87,6 +87,16 @@ functions:
               paths:
                 mac: true
 
+  getInterfaceConfig:
+    handler: ifconfig.getInterface
+    events:
+      - http:
+          path: network/interfaces/{ifName}
+          method: get
+          request:
+            parameters:
+              paths:
+                ifName: true
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details

@@ -1,27 +1,13 @@
 'use strict';
 
 const dhcpdLeases = require('dhcpd-leases');
-const { S3 } = require('aws-sdk');
+const { getS3 } = require('./s3');
 
-const s3 = new S3();
-
-const Bucket = 'compression-space-transport';
-const Key = 'status-files/dhcpd.leases';
-
-function getS3() {
-  const params = {
-    Bucket,
-    Key,
-  };
-  return new Promise((resolve, reject) =>
-    s3.getObject(params, (err, data) =>
-      (err) ? reject(err) : resolve(data)))
-    .then(({ Body }) => Body.toString());
-}
+const key = 'status-files/dhcpd.leases';
 
 // Get all leases
 function getLeases() {
-  return getS3()
+  return getS3({ key })
     .then(dhcpdLeases)
 }
 
@@ -79,7 +65,6 @@ module.exports.getOnline = (event, context, callback) => {
     })
     .catch(error => callback(error, null));
 };
-
 
 function getStatusForMac({ mac }) {
   return getLeases().then(getLatestLease)
