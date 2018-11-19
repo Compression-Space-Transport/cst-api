@@ -65,6 +65,22 @@ function isOnline(lease) {
   return lease['binding state'] === 'active';
 }
 
+module.exports.getOnline = (event, context, callback) => {
+  getLeases()
+    .then(getLatestLease)
+    .then(leases => leases.filter(isOnline))
+    .then(leases => {
+      const response = {
+        statusCode: 200,
+        body: JSON.stringify({ leases }),
+      };
+
+      callback(null, response);
+    })
+    .catch(error => callback(error, null));
+};
+
+
 function getStatusForMac({ mac }) {
   return getLeases().then(getLatestLease)
     .then(leases => leases.filter(lease => lease['hardware ethernet'] === mac).pop())

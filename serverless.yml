@@ -69,6 +69,13 @@ functions:
           path: leases/latest
           method: get
 
+  getOnlineLeases:
+    handler: leases.getOnline
+    events:
+      - http:
+          path: leases/online
+          method: get
+
   getStatusForMac:
     handler: leases.getStatusForMac
     events:
