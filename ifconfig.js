@@ -31,3 +31,8 @@ module.exports.getInterface = ({ pathParameters: { ifName } }, context, callback
   })
   .catch(err => callback(err, null));
 }
+
+module.exports.setInterface = ({ pathParameters: { ifName } }, context, callback) => {
+  //TODO: setInterface
+
+}
