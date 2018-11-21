@@ -1,3 +1,5 @@
+env.sh
+
 .*.swp
 # package directories
 node_modules
