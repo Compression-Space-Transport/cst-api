@@ -25,10 +25,8 @@ function getInterface({ ifName }) {
 }
 
 module.exports.getInterface = ({ pathParameters: { ifName } }, context, callback) => {
-  getInterface({ ifName }).then(config => {
-    const response = { statusCode: 200, body: JSON.stringify({ ifName, config }) };
-    callback(null, response);
-  })
+  getInterface({ ifName }).then(config =>
+    callback(null, JSON.stringify({ ifName, config })))
   .catch(err => callback(err, null));
 }
 

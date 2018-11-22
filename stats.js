@@ -7,12 +7,7 @@ const iptstateKey = 'status-files/iptstate.txt';
 
 module.exports.getSystem = (event, context, callback) => {
   getS3({ key: systemDataKey }).then(body => {
-    const response = {
-      statusCode: 200,
-      body,
-    };
-
-    callback(null, response);
+    callback(null, body);
   })
   .catch(error => callback(error, null));
 };
@@ -48,5 +43,5 @@ function getIptstate() {
 module.exports.getIptstate = (event, context, callback) => {
   getIptstate()
     .then(JSON.stringify)
-    .then(body => callback(null, { statusCode: 200, body }));
+    .then(body => callback(null, body));
 }

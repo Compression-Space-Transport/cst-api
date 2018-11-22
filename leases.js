@@ -25,24 +25,14 @@ function getLatestLease(leases) {
 
 module.exports.getAll = (event, context, callback) => {
   getLeases().then(leases => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({ leases }),
-    };
-
-    callback(null, response);
+    callback(null, JSON.stringify({ leases }));
   })
   .catch(error => callback(error, null));
 };
 
 module.exports.getLatest = (event, context, callback) => {
   getLeases().then(getLatestLease).then(leases => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({ leases }),
-    };
-
-    callback(null, response);
+    callback(null, JSON.stringify({ leases }));
   })
   .catch(error => callback(error, null));
 };
@@ -56,12 +46,7 @@ module.exports.getOnline = (event, context, callback) => {
     .then(getLatestLease)
     .then(leases => leases.filter(isOnline))
     .then(leases => {
-      const response = {
-        statusCode: 200,
-        body: JSON.stringify({ leases }),
-      };
-
-      callback(null, response);
+      callback(null, JSON.stringify({ leases }));
     })
     .catch(error => callback(error, null));
 };
@@ -75,12 +60,7 @@ function getStatusForMac({ mac }) {
 
 module.exports.getStatusForMac = ({ pathParameters: { mac } }, context, callback) => {
   getStatusForMac({ mac }).then(({ online }) => {
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify({ mac, online }),
-    };
-
-    callback(null, response);
+    callback(null, JSON.stringify({ mac, online }));
   })
   .catch(error => callback(error, null));
 };
