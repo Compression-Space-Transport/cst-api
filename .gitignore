@@ -1,4 +1,5 @@
 env.sh
+test.sh
 
 .*.swp
 # package directories

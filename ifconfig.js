@@ -24,9 +24,9 @@ function getInterface({ ifName }) {
   return getS3({ key }).then(parseInterface);
 }
 
-module.exports.getInterface = ({ pathParameters: { ifName } }, context, callback) => {
+module.exports.getInterface = ({ path: { ifName } }, context, callback) => {
   getInterface({ ifName }).then(config =>
-    callback(null, JSON.stringify({ ifName, config })))
+    callback(null, { ifName, config }))
   .catch(err => callback(err, null));
 }
 

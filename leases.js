@@ -25,16 +25,20 @@ function getLatestLease(leases) {
 
 module.exports.getAll = (event, context, callback) => {
   getLeases().then(leases => {
-    callback(null, JSON.stringify({ leases }));
+    console.log('Got all leases', leases);
+    callback(null, { leases });
   })
-  .catch(error => callback(error, null));
+  .catch(error => {
+    console.error('Failure getting leases', error);
+    callback(null, { error })
+  });
 };
 
 module.exports.getLatest = (event, context, callback) => {
   getLeases().then(getLatestLease).then(leases => {
-    callback(null, JSON.stringify({ leases }));
+    callback(null, { leases });
   })
-  .catch(error => callback(error, null));
+  .catch(error => callback(null, { error }));
 };
 
 function isOnline(lease) {
@@ -46,7 +50,7 @@ module.exports.getOnline = (event, context, callback) => {
     .then(getLatestLease)
     .then(leases => leases.filter(isOnline))
     .then(leases => {
-      callback(null, JSON.stringify({ leases }));
+      callback(null, { leases });
     })
     .catch(error => callback(error, null));
 };
@@ -60,7 +64,7 @@ function getStatusForMac({ mac }) {
 
 module.exports.getStatusForMac = ({ pathParameters: { mac } }, context, callback) => {
   getStatusForMac({ mac }).then(({ online }) => {
-    callback(null, JSON.stringify({ mac, online }));
+    callback(null, { mac, online });
   })
   .catch(error => callback(error, null));
 };

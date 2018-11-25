@@ -11,6 +11,26 @@ provider:
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::compression-space-transport/*" ] ]  }
 
 functions:
+  authorize:
+    handler: auth.authorize
+
+  genToken:
+    timeout: 10
+    handler: auth.genToken
+    events:
+      - http:
+          response:
+            body:
+              Content-Type: "'application.json'"
+          integration: lambda
+          path: users/{subject}/tokens
+          method: post
+          request:
+            parameters:
+              paths:
+                subject: true
+          
+
   getAllLeases:
     handler: leases.getAll
     events:
@@ -19,11 +39,7 @@ functions:
             body:
               Content-Type: "'application.json'"
           integration: lambda
-          authorizer:
-            name: authorizer
-            arn: ${env:COGNITO_ARN}
-            claims:
-              - email
+          authorizer: authorize
           path: leases/all
           method: get
 
@@ -35,11 +51,7 @@ functions:
             body:
               Content-Type: "'application.json'"
           integration: lambda
-          authorizer:
-            name: authorizer
-            arn: ${env:COGNITO_ARN}
-            claims:
-              - email
+          authorizer: authorize
           path: leases/latest
           method: get
 
@@ -51,11 +63,7 @@ functions:
             body:
               Content-Type: "'application.json'"
           integration: lambda
-          authorizer:
-            name: authorizer
-            arn: ${env:COGNITO_ARN}
-            claims:
-              - email
+          authorizer: authorize
           path: leases/online
           method: get
 
@@ -67,11 +75,7 @@ functions:
             body:
               Content-Type: "'application.json'"
           integration: lambda
-          authorizer:
-            name: authorizer
-            arn: ${env:COGNITO_ARN}
-            claims:
-              - email
+          authorizer: authorize
           path: leases/device/{mac}/status
           method: get
           request:
@@ -87,11 +91,7 @@ functions:
             body:
               Content-Type: "'application.json'"
           integration: lambda
-          authorizer:
-            name: authorizer
-            arn: ${env:COGNITO_ARN}
-            claims:
-              - email
+          authorizer: authorize
           path: network/interfaces/{ifName}
           method: get
           request:
@@ -107,26 +107,30 @@ functions:
             body:
               Content-Type: "'application.json'"
           integration: lambda
-          authorizer:
-            name: authorizer
-            arn: ${env:COGNITO_ARN}
-            claims:
-              - email
+          authorizer: authorize
           path: system/stats
           method: get
 
   getIptstate:
-    handler: stats.getIptstate
+    handler: iptables.getIptstate
     events:
       - http:
           response:
             body:
               Content-Type: "'application.json'"
           integration: lambda
-          authorizer:
-            name: authorizer
-            arn: ${env:COGNITO_ARN}
-            claims:
-              - email
-          path: network/iptstate
+          authorizer: authorize
+          path: network/iptables/iptstate
+          method: get
+
+  getBlockedRequests:
+    handler: iptables.getBlockedRequests
+    events:
+      - http:
+          response:
+            body:
+              Content-Type: "'application.json'"
+          integration: lambda
+          authorizer: authorize
+          path: network/iptables/blocked
           method: get
