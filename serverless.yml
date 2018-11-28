@@ -99,6 +99,18 @@ functions:
               paths:
                 ifName: true
 
+  getNmap:
+    handler: stats.getNmap
+    events:
+      - http:
+          response:
+            body:
+              Content-Type: "'application.json'"
+          integration: lambda
+          authorizer: authorize
+          path: network/nmap
+          method: get
+
   getSystemStats:
     handler: stats.getSystem
     events:
