@@ -39,6 +39,6 @@ function getNmap() {
 
 module.exports.getNmap = (event, context, callback) => {
   getNmap()
-    .then(body => callback(null, { body }))
+    .then(body => callback(null, body))
     .catch(error => callback(error, null))
 };
