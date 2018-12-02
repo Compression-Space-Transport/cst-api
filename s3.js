@@ -17,4 +17,15 @@ function getS3({ key }) {
     .then(({ Body }) => Body.toString());
 }
 
-module.exports = { getS3 };
+function setS3({ key, body }) {
+  const params = {
+    Bucket,
+    Key: key,
+    Body: body,
+  };
+  return new Promise((resolve, reject) =>
+    s3.upload(params, (err, data) =>
+      (err) ? reject(err): resolve(data)));
+}
+
+module.exports = { getS3, setS3, };

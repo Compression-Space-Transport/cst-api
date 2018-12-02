@@ -99,6 +99,22 @@ functions:
               paths:
                 ifName: true
 
+  setInterfaceConfig:
+    handler: ifconfig.setInterface
+    events:
+      - http:
+          response:
+            body:
+              Content-Type: "'application.json'"
+          integration: lambda
+          authorizer: authorize
+          path: network/interfaces/{ifName}
+          method: post
+          request:
+            parameters:
+              paths:
+                ifName: true
+
   getNmap:
     handler: stats.getNmap
     events:
