@@ -1,7 +1,8 @@
 'use strict';
 
-const { getS3 } = require('./s3');
+const { getS3, setS3, } = require('./s3');
 
+const iptablesKey = 'desired-configs/etc/sysconfig/iptables';
 const iptstateKey = 'status-files/iptstate.txt';
 const messagesKey = 'status-files/messages';
 
@@ -90,4 +91,51 @@ function getIptstate() {
 
 module.exports.getIptstate = (event, context, callback) => {
   getIptstate().then(body => callback(null, body));
+}
+
+function parseTable(table) {
+  const [name, ...body] = table.split('\n')
+  // No # comments pls! Use -m comment --comment
+    .filter(line => line.indexOf('#') !== 0)
+    .map(lines => lines.trim());
+  const chains = body.filter(line => line.indexOf(':') === 0);
+  const rules = body.filter(line => line.indexOf('-A') === 0);
+  return { name, chains, rules };
+}
+
+function parseIptablesDoc(doc) {
+  const startTableRules = doc.indexOf('*');
+  return doc.substring(startTableRules).split('*')
+    .map(block => block.trim())
+    .filter(block => block.length > 0)
+    .map(parseTable)
+    .reduce((obj, { name, ...rest }) => {
+      obj[name] = rest;
+      return obj;
+    }, {})
+}
+
+function getIptablesRules() {
+  return getS3({ key: iptablesKey }).then(parseIptablesDoc).then(tables => ({ tables }));
+}
+
+
+module.exports.getIptablesRules = (event, context, callback) => {
+  getIptablesRules().then(rules => callback(null, rules))
+    .catch(err => callback(err));
+}
+
+function encodeTable({ table, chains, rules }) {
+  return `*${table}\n${chains.concat(rules).join('\n')}\nCOMMIT`;
+}
+
+function setIptablesRules({ tables }) {
+  const body = `${Object.keys(tables).map(table => encodeTable(Object.assign({ table }, tables[table]))).join('\n')}\n`; // newline required!
+  console.log(body)
+  return setS3({ key: iptablesKey, body });
+}
+
+module.exports.setIptablesRules = ({ body }, context, callback) => {
+  setIptablesRules(body).then(rules => callback(null, body))
+    .catch(err => callback(err));
 }

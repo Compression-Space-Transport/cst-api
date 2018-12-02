@@ -162,3 +162,27 @@ functions:
           authorizer: authorize
           path: network/iptables/blocked
           method: get
+
+  getIptablesRules:
+    handler: iptables.getIptablesRules
+    events:
+      - http:
+          response:
+            body:
+              Content-Type: "'application.json'"
+          integration: lambda
+          authorizer: authorize
+          path: network/iptables/rules
+          method: get
+
+  setIptablesRules:
+    handler: iptables.setIptablesRules
+    events:
+      - http:
+          response:
+            body:
+              Content-Type: "'application.json'"
+          integration: lambda
+          authorizer: authorize
+          path: network/iptables/rules
+          method: post
