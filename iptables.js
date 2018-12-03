@@ -108,17 +108,19 @@ function parseRule(rule) {
   const [, sourcePort] = tryMatch(/\s--sport\s([^\s]+)/, rule);
   const [, destination] = tryMatch(/\s-d\s([^\s]+)/, rule);
   const [, destinationPort] = tryMatch(/\s--dport\s([^\s]+)/, rule);
-  const [, match] = tryMatch(/\s-m\s([^\s]+)/, rule);
+  const [,match] = tryMatch(/\s-m\s((?!state|comment|limit)[^\s]+)\s/, rule);
   const [, jump] = tryMatch(/\s-j\s([^\s]+)/, rule);
   const [, goto] = tryMatch(/\s-g\s([^\s]+)/, rule);
   const [, inInterface] = tryMatch(/\s-i\s([^\s]+)/, rule);
   const [, outInterface] = tryMatch(/\s-o\s([^\s]+)/, rule);
 
-  const [, state] = tryMatch(/\s--state\s([^\s]+)/, rule);
+  const [, state] = tryMatch(/\s-m\sstate\s--state\s([^\s]+)/, rule);
 
 
-  const [, limit] = tryMatch(/\s--limit\s([^\s]+)/, rule);
+  const [, limit] = tryMatch(/\s-m limit --limit\s([^\s]+)/, rule);
   const [, logPrefix] = tryMatch(/\s--log-prefix\s("[^"]+")/, rule);
+  const [, tos] = tryMatch(/\s--set-tos\s([^\s]+)/, rule);
+  const [, comment] = tryMatch(/\s-m\scomment\s--comment\s("[^"]+")/, rule);
 
   return { 
     rule,
@@ -136,6 +138,8 @@ function parseRule(rule) {
     outInterface,
     limit,
     logPrefix, 
+    tos,
+    comment,
   };
 }
 
@@ -188,6 +192,8 @@ function encodeRule({
     logPrefix, 
     jump,
     goto,
+    tos,
+    comment,
   }) {
   function map2Str(str, elem) {
     if(elem) {
@@ -202,13 +208,15 @@ function encodeRule({
     map2Str('--sport', sourcePort) +
     map2Str('--dport', destinationPort) +
     map2Str('-m', match) +
-    map2Str('--state', state) +
+    map2Str('-m state --state', state) +
     map2Str('-i', inInterface) +
     map2Str('-o', outInterface) +
-    map2Str('--limit', limit) +
+    map2Str('-m limit --limit', limit) +
     map2Str('-j', jump) +
     map2Str('-g', goto) +
-    map2Str('--log-prefix', logPrefix)
+    map2Str('--log-prefix', logPrefix) +
+    map2Str('--set-tos', tos) +
+    map2Str('-m comment --comment', comment)
     .trim();
 }
 
@@ -222,9 +230,10 @@ function setIptablesRules({ tables }) {
   return setS3({ key: iptablesKey, body });
 }
 
-// getIptablesRules().then(rules => setIptablesRules(rules)); // TODO: remove and replace with functional test
+//getIptablesRules()/*.then(rules => JSON.stringify(rules, null, 2)).then(console.log)*/.then(rules => setIptablesRules(rules)); // TODO: remove and replace with functional test
 
 module.exports.setIptablesRules = ({ body }, context, callback) => {
   setIptablesRules(body).then(rules => callback(null, body))
     .catch(err => callback(err));
 }
+
