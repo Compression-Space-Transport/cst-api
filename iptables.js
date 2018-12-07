@@ -108,6 +108,7 @@ function parseRule(rule) {
   const [, sourcePort] = tryMatch(/\s--sport\s([^\s]+)/, rule);
   const [, destination] = tryMatch(/\s-d\s([^\s]+)/, rule);
   const [, destinationPort] = tryMatch(/\s--dport\s([^\s]+)/, rule);
+  const [, destinationIp] = tryMatch(/\s--to-destination\s([^\s]+)/, rule);
   const [,match] = tryMatch(/\s-m\s((?!state|comment|limit)[^\s]+)\s/, rule);
   const [, jump] = tryMatch(/\s-j\s([^\s]+)/, rule);
   const [, goto] = tryMatch(/\s-g\s([^\s]+)/, rule);
@@ -115,7 +116,6 @@ function parseRule(rule) {
   const [, outInterface] = tryMatch(/\s-o\s([^\s]+)/, rule);
 
   const [, state] = tryMatch(/\s-m\sstate\s--state\s([^\s]+)/, rule);
-
 
   const [, limit] = tryMatch(/\s-m limit --limit\s([^\s]+)/, rule);
   const [, logPrefix] = tryMatch(/\s--log-prefix\s("[^"]+")/, rule);
@@ -130,6 +130,7 @@ function parseRule(rule) {
     sourcePort,
     destination,
     destinationPort,
+    destinationIp,
     match,
     state,
     jump,
@@ -184,6 +185,7 @@ function encodeRule({
     sourcePort,
     destination,
     destinationPort,
+    destinationIp,
     match,
     state,
     inInterface,
@@ -214,6 +216,7 @@ function encodeRule({
     map2Str('-m limit --limit', limit) +
     map2Str('-j', jump) +
     map2Str('-g', goto) +
+    map2Str('--to-destination', destinationIp) +
     map2Str('--log-prefix', logPrefix) +
     map2Str('--set-tos', tos) +
     map2Str('-m comment --comment', comment)
@@ -230,7 +233,7 @@ function setIptablesRules({ tables }) {
   return setS3({ key: iptablesKey, body });
 }
 
-//getIptablesRules()/*.then(rules => JSON.stringify(rules, null, 2)).then(console.log)*/.then(rules => setIptablesRules(rules)); // TODO: remove and replace with functional test
+//getIptablesRules()/*.then(rules => JSON.stringify(rules, null, 2)).then(console.log) */.then(rules => setIptablesRules(rules)); // TODO: remove and replace with functional test
 
 module.exports.setIptablesRules = ({ body }, context, callback) => {
   setIptablesRules(body).then(rules => callback(null, body))
