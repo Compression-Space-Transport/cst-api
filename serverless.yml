@@ -8,6 +8,7 @@ provider:
     - Effect: "Allow"
       Action:
         - "s3:GetObject"
+        - "s3:PutObject"
       Resource: { "Fn::Join" : ["", ["arn:aws:s3:::compression-space-transport/*" ] ]  }
 
 functions:

@@ -26,7 +26,7 @@ function getNmap() {
     .then(str => str.replace(/\n/g, ''))
     .then(str => str + '</nmaprun>') //HACK! nmap outputting malformed xml
     .then(parseXML)
-    .then(({ host }) => host)
+    .then(({ host }) => host || [])
     .then(hosts => hosts.map(host => {
       const status = host.status.pop()['$']
       const address = host.address.map(({ $: { addr, addrtype } }) => ({ [addrtype]: addr })).reduce((a,b) => Object.assign(a,b), {});
@@ -40,5 +40,5 @@ function getNmap() {
 module.exports.getNmap = (event, context, callback) => {
   getNmap()
     .then(body => callback(null, body))
-    .catch(error => callback(error, null))
+    .catch(error => callback(error))
 };

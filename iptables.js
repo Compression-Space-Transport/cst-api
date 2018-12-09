@@ -229,14 +229,13 @@ function encodeTable({ table, chains, rules }) {
 
 function setIptablesRules({ tables }) {
   const body = `${Object.keys(tables).map(table => encodeTable(Object.assign({ table }, tables[table]))).join('\n\n')}\n`; // newline required!
-  console.log(body)
-  return setS3({ key: iptablesKey, body });
+  return setS3({ key: iptablesKey, body }).then(() => body);
 }
 
 //getIptablesRules()/*.then(rules => JSON.stringify(rules, null, 2)).then(console.log) */.then(rules => setIptablesRules(rules)); // TODO: remove and replace with functional test
 
 module.exports.setIptablesRules = ({ body }, context, callback) => {
-  setIptablesRules(body).then(rules => callback(null, body))
+  setIptablesRules(body).then(res => callback(null, res))
     .catch(err => callback(err));
 }
 
