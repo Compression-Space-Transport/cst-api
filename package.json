@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@wkronmiller/iptables-parser": "^0.0.1",
     "aws-sdk": "^2.361.0",
     "bcrypt": "^3.0.2",
     "bcryptjs": "^2.4.3",

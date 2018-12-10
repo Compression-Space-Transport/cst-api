@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@wkronmiller/iptables-parser@^0.0.1":
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/@wkronmiller/iptables-parser/-/iptables-parser-0.0.1.tgz#bd92d2d738af965f1dbe5df2fe598d24cebcbdcf"
+  integrity sha512-90+IcxjEW/V9LRWd/oESPNTaue1qoegJsv2FRXp2pc+Azwmc8sgeTZg1tSAgmIWt4Gcoyw+DM6hUbEkvNFuY8A==
+
 abbrev@1:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
